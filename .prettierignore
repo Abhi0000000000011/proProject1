@@ -1,0 +1,9 @@
+*.env
+.env
+.env.*
+# this prettier do unwantedd changes in the env file which causes errors so we here tells prettier to ignore those things 
+
+/node_modules
+/.vscode
+./dist
+
