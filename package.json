@@ -1,7 +1,7 @@
 {
   "name": "proproject1",
   "version": "1.0.0",
-  "types": "module",
+  "type": "module",
   "description": "",
   "keywords": [
     "javascript",
@@ -10,7 +10,6 @@
   ],
   "license": "ISC",
   "author": "Abhishek Rawat",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js"
@@ -20,6 +19,7 @@
     "prettier": "^3.9.6"
   },
   "dependencies": {
+    "dns": "^0.2.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.6.0",
