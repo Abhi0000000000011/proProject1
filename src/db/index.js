@@ -24,3 +24,12 @@ const connectDB = async() => {
 }
 
 export default connectDB;
+
+
+
+
+
+
+// now we know how to connect with the database and which thngs are required and which are the things that may went wrong and
+// where we need to work this is same for connectivity in any database 
+

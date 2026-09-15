@@ -14,12 +14,14 @@
 
 
 import dotenv from "dotenv"
+import "dotenv/config";
 dotenv.config({path: './env'})
+
 // this we do so that all the environment variabls should be available everywhere 
 
 
 
-// this alone is working but in package.json chaiiwala bahi also do this shit 
+// this alone is working but in package.json chaiwala bahi also do this shit 
 
 //   "scripts": {
 //     "dev": "nodemon src/index.js"
@@ -86,7 +88,7 @@ dotenv.config({path: './env'})
 
 
 
-// 2nd approach
+// // 2nd approach
 
 import dns from "dns";
 
@@ -96,4 +98,31 @@ import connectDB from "./db/index.js";
 
 connectDB();
 
-// now wew are connected to the database 
+// // now wew are connected to the database 
+
+
+
+
+
+// import { app } from "./app.js";
+// import dns from "dns";
+
+// dns.setServers(["1.1.1.1"]);
+
+// import connectDB from "./db/index.js";
+
+// // this is for what to do after our database is connected like in ".then" we will say whatwe have to do after connecting to 
+// // the database and in ".catch" is for to catch error if there is any during the connection in our database
+// connectDB()
+// .then(() => {
+//     app.on("error", (err) => {
+//         console.log(`There is a error here after connecting to the database Error : ${err}`);
+//         throw err;
+//     })
+//     app.listen(process.env.PORT || 8000, () => {
+//         console.log(`server is running in port ${process.env,PORT}`);
+//     })
+// })
+// .catch((err) => {
+//     console.log("mongoDB connection failed Error: ", err);
+// })
