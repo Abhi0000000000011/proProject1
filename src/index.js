@@ -90,16 +90,74 @@ dotenv.config({path: './env'})
 
 // // 2nd approach
 
+// import dns from "dns";
+
+// dns.setServers(["1.1.1.1"]);
+
+// import connectDB from "./db/index.js";
+
+// connectDB();
+
+// // now wew are connected to the database 
+
+
+
+
+
+import { app } from "./app.js";
 import dns from "dns";
 
 dns.setServers(["1.1.1.1"]);
 
 import connectDB from "./db/index.js";
 
-connectDB();
+// this is for what to do after our database is connected like in ".then" we will say whatwe have to do after connecting to 
+// the database and in ".catch" is for to catch error if there is any during the connection in our database
+connectDB()
+.then(() => {
+    app.on("error", (err) => {
+        console.log(`There is a error here after connecting to the database Error : ${err}`);
+        throw err;
+    })
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`server is running in port ${process.env.PORT}`);
+    })
+})
+.catch((err) => {
+    console.log("mongoDB connection failed Error: ", err);
+})
 
-// // now wew are connected to the database 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// here also we are without any comments 
+
+
+
+// import dotenv from "dotenv"
+// import "dotenv/config";
+// dotenv.config({path: './env'})
 
 
 
@@ -111,8 +169,6 @@ connectDB();
 
 // import connectDB from "./db/index.js";
 
-// // this is for what to do after our database is connected like in ".then" we will say whatwe have to do after connecting to 
-// // the database and in ".catch" is for to catch error if there is any during the connection in our database
 // connectDB()
 // .then(() => {
 //     app.on("error", (err) => {
@@ -120,9 +176,12 @@ connectDB();
 //         throw err;
 //     })
 //     app.listen(process.env.PORT || 8000, () => {
-//         console.log(`server is running in port ${process.env,PORT}`);
+//         console.log(`server is running in port ${process.env.PORT}`);
 //     })
 // })
 // .catch((err) => {
 //     console.log("mongoDB connection failed Error: ", err);
 // })
+
+
+

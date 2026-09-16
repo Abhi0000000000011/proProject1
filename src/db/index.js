@@ -33,3 +33,46 @@ export default connectDB;
 // now we know how to connect with the database and which thngs are required and which are the things that may went wrong and
 // where we need to work this is same for connectivity in any database 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // using without comments here we are 
+
+// import mongoose from "mongoose";
+// import { DB_NAME } from "../constants.js";
+
+// const connectDB = async() => {
+//     try{
+//         const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+//         console.log("connectionInstance is here ", connectionInstance);
+//         console.log(`\n mongoDB connected !!!! ${connectionInstance.connection.host}`);
+//     }
+//     catch(err)
+//     {
+//         console.log("MONGODB connection error:", err);
+//         process.exit(1);
+//     }
+// }
+
+// export default connectDB;
+
+
+
+
