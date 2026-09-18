@@ -19,7 +19,7 @@
 
 
 // in this file our simple goal is that we will be getting our files trough the file system  means the files 
-// are already uploaded in the local server 
+// are already uploaded in the local server and we will be sending them to cloud        inary 
 
 
 
@@ -71,7 +71,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         // uploading file 
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto"
-            // now it will auto detect which type of file we are uploading 
+            // now it will auto detect which type of file user has given and we are uploading 
         });
         // we can also further describe our file here in upload like weather it is a png or a video or a svg or something else
         // now here file has been uploaded successfully 
