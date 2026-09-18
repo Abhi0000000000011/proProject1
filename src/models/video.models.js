@@ -1,7 +1,7 @@
 
 
 
-// we will also be using aggrigation pipelining ie aggrigation queries in this project wichh on its own a huge topic to learn
+// we will also be using aggrigation pipelining ie aggrigation queries in this project which on its own a huge topic to learn
 // using this dependency 
 // npm i mongoose-aggregate-paginate-v2
 // and using this is this file only 

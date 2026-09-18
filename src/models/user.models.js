@@ -86,18 +86,20 @@ const userSchema = new Schema({
 }, {timestamps: true})
 
 
-// here save is for whenever we are saving data just vefore it run this middleware 
-// we dont use arrow function here as arrow function dont use this feature and we want a particula user who is saving 
+// here save is for whenever we are saving data just before it run this middleware 
+// we dont use arrow function here as arrow function dont use "this" feature and we want a particular user who is saving 
 // his or her data so for that we write a mannual function there 
 // we write async function cuz we know we are talking with the database and also algo runs takes time cpu processing 
 // we will be using next as we know when we deal with middleware we use next keyword so that when the middleware 
-// has completed its work we can goe to next part or the next middleware 
+// has completed its work we can go to next part or the next middleware and the middleware can pass the flag to next one
+
 
 // userSchema.pre("save", async function (next) {
 //     this.password = bcrypt.hash(this.password, 10);
 //     next()
-//     // now we have created a problem as now like if we change our avatar in user the password again changes as this will 
-//     // run before doing any changes in our database which will cause the chage of password bcz we are again encrypting 
+//     // now we have created a problem as now like if we change our avatar in user the password again changes its
+//     // encrypted form as this will 
+//     // run before doing any changes in our database which will cause the change of password bcz we are again encrypting 
 //     // the same password which we dont want as there will be already  user's password encrypted and we dont
 //     // want it to change unnecessarily
 //     // so we want that when we are doing things with the password field than only run this otherwise ignore it 
@@ -112,7 +114,7 @@ const userSchema = new Schema({
 //     // slower here means bcrypt will take more time to encrypt it 
 //     // as you increase the number, the computational cost increase
 //     // Computational cost simply means how much work the computer has to do to complete an operation.
-
+//     // more is the work or computation cost more the time will the computer takes to complete it 
 //     next()
 // });
 
@@ -124,13 +126,14 @@ userSchema.pre("save", async function(next)
     {
         this.password = bcrypt.hash(this.password, 12);
         next();
-        // this next is for so that we can now go to next middleware or go next bcz with this middleware our work is done 
+        // this next is for so that we can now go to next middleware or go next cuz as for now 
+        // with this middleware our work is done 
     }
     
 })
 
 // as mongoose give us in build methods and give us freedom to make our own methods we can make a method to check weather a 
-// user is a vaild user or not by checking its password as we know we have encrypted tthe password so 
+// user is a vaild user or not by checking its password as we know we have encrypted the password so 
 // in that method we are gonna decrypt the password and check with the user's password the user has given 
 // currently 
 
@@ -140,9 +143,89 @@ userSchema.methods.isPasswordCorrect = async function(password)// the password u
     // this too takes time so we use await bcz this is cryptography which takes time 
     return await bcrypt.compare(password, this.password);
     // this bcrypt library has its own in it to check password so this is how we do it 
-    // first thing we pass is the current ppassword given by the user 2nd thing is the encrypted password
+    // first thing we pass is the current password given by the user 2nd thing is the encrypted password
     // this library compare both and than return a boolean value 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// When a user successfully logs in with their correct email and password, your backend calls these exact methods you shared:
+
+
+// const accessToken = await user.generateAccessToken();
+// It is short-lived (e.g., expires in 15 minutes). Because it contains user details (_id, email, etc.) and is cryptographically 
+// signed, the server can trust it instantly without hitting the database on every single click.
+
+// const refreshToken = await user.generateRefreshToken();
+// It is long-lived (e.g., expires in 7 days). It contains very little info (just the _id). Its only job is to live securely 
+// in the background and 
+// generate a new Access Token when the old one expires, saving the user from having to type their password over and over again.
+
+// so now i have to make a controller where when user successfully logs in these two token functions should call immidiately 
+// to generate token for the user which should work as a key for it 
+
+// what happen when access token expires ??
+
+// When the short-lived access token expires, but the refresh token is still valid, the user does NOT get logged out. 
+// Instead, your app performs what is called a "Silent Refresh." . The user clicks a button to view their profile, but 
+// their 15-minute access token has expired. Your backend rejects the request and sends back a 401 Unauthorized status code.
+
+// The Frontend Catches It:
+// Your frontend JavaScript (often using an Axios interceptor or fetch wrapper) is built to watch for 401 errors. When it sees 
+// one instead of kicking the user to the login page, it says "Wait,let me ask for a new access token using the refresh token"
+
+// The Refresh Request:
+// The frontend automatically sends a background POST request to your backend's /refresh-token route. Because the refresh token 
+// is stored safely in an HTTP-only cookie, the browser automatically attaches it to this request.
+
+// The Backend Verifies:
+// Your backend receives the refresh token, verifies its signature using process.env.REFRESH_TOKEN_SECRET, 
+// and checks your MongoDB database to make sure it matches the token stored for that user.
+
+// A New Access Token is Born:
+// If everything checks out, your backend uses your user.generateAccessToken() 
+// method to create a brand new Access Token (good for another 15 minutes).
+
+// The Original Action Retries:
+// The backend sends that new access token back to the frontend. 
+// The frontend instantly takes that new token and retries the original request the user tried to make.
+
+
+
+
+
+
+
+// What happens when the Refresh Token expires?
+// The Silent Failure: When the short-lived Access Token (15 mins) dies, your frontend automatically tries to use 
+// the Refresh Token to get a new one.
+
+// The Rejection: Because the Refresh Token has also expired, your backend checks it, sees that it's too old 
+// (or invalid), and rejects the request (usually throwing a 403 Forbidden or 401 Unauthorized error).
+
+// The Kick-Out: Your frontend catches this error, clears any leftover user data, and redirects the user back to the login page.
+
+// The user is now forced to enter their email and password again for security.
+
+
+
+
+
+
+
+
+
 
 // we can also make a access token generate method too here 
 

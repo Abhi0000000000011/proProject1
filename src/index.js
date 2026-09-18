@@ -34,8 +34,8 @@ dotenv.config({path: './env'})
 //   "scripts": {
 //     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
 //   },
-// without this we can work as the upper one can also work this one was just to remember that before when this 
-// import statement when we use rewuire to shift from rewuire to import we use this script 
+// without this we can work as the upper one, can also work this one was just to remember that before when this 
+// import statement, we use require, to shift from require to import we use this script in old days
 
 
 
@@ -69,7 +69,6 @@ dotenv.config({path: './env'})
 //             console.log("Application not able to talk to the database");
 //             throw err;
 //         })
-
 //         app.listen(process.env.PORT, () => {
 //             console.log("App is listening on port:", process.env.PORT);
 //         })
@@ -112,7 +111,7 @@ dns.setServers(["1.1.1.1"]);
 
 import connectDB from "./db/index.js";
 
-// this is for what to do after our database is connected like in ".then" we will say whatwe have to do after connecting to 
+// this is for what to do after our database is connected like in ".then" we will say what we have to do after connecting to 
 // the database and in ".catch" is for to catch error if there is any during the connection in our database
 connectDB()
 .then(() => {
@@ -133,7 +132,16 @@ connectDB()
 
 
 
+// What is Node.js, really?
 
+// Node.js is not a programming language. It is simply JavaScript running on your computer's 
+// server instead of inside a web browser.
+
+// Since you already know JavaScript (variables, loops, functions, arrow functions, async/await), you
+// already know the language part of Node.js.
+
+// What makes "learning Node.js" unique is learning Node's built-in tools (modules) that allow JavaScript to 
+// interact with your computer's operating system.
 
 
 

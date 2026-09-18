@@ -35,7 +35,7 @@ import { v2 as cloudinary } from 'cloudinary';
 
 import fs from "fs"
 // this fs is file system which is by default available in our nodejs package 
-// how our file system works = in our file system there are files linked and unlinked so when we delete a ffile that file
+// how our file system works = in our file system there are files linked and unlinked so when we delete a file that file
 // gets unlinked with the system so now we know how to remove a file using the unlink method
 
 
@@ -53,7 +53,7 @@ import fs from "fs"
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
     api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
+    api_secret: process.env.CLOUDINARY_API_SECRET 
 });
     
 
@@ -80,8 +80,8 @@ const uploadOnCloudinary = async (localFilePath) => {
         // returning response as now user can take anything what it wants as the response has all the data about the file 
         // its url size etc btw most imp is url and other are just nothing but still 
     } catch (error) {
-        // if we catch error here we know that the file is uploaded in our local server sso the main problem is 
-        // here when we are uploading it to the cloudinary so means that file is what causing error so 
+        // if we catch error here we know that the file is uploaded in our local server so the main problem is 
+        // here when we are uploading it to the cloudinary which means that file is what causing error so 
         // we should remove it from the server bcz it is causing problem for us 
         fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation failed
         return null;
