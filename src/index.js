@@ -17,6 +17,7 @@ import dotenv from "dotenv"
 import "dotenv/config";
 dotenv.config({path: './env'})
 
+
 // this we do so that all the environment variabls should be available everywhere 
 
 
