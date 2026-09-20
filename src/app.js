@@ -45,6 +45,59 @@ app.use(cookieParser());// setting up cookieparser
 // app.listen();
 
 
+
+
+
+
+
+
+
+
+// routes
+
+
+
+// Route : A specific path, rule, or mapping that defines how a particular request or URL should be handled.
+
+// In Web Development: It connects a URL endpoint (e.g., /profile or /api/users) to the specific code, function, 
+// or component that should render when a user visits that address.
+
+// Router: The control mechanism or manager that handles, evaluates, and directs multiple routes.
+
+// In Web Development: A library or component (like React Router or Express Router) that listens to incoming URL 
+// changes or requests, looks at the defined collection of routes, and decides which specific route matches and should be executed
+
+
+// routes import
+import userRouter from "./routes/user.routes.js";
+import { registerUser } from "./controllers/user.controller.js";
+
+// routes decleration
+
+// first we were using 
+// app.get() here we did not expect any routing as with the help of app we were declearing routes and controllers here only 
+// but now as we have saparated the routes and controllers so now we need the help of middleware to bring the route
+// this is complusory as this is the syntax
+
+// app.use("/users", userRouter)
+// here the first one is the route and the second one is the router 
+
+app.use("/users", userRouter)
+// now when any user reaches for example "http://localhost:8000/users"our server will give control to the userRouter 
+// thann we will do the things which willl be performedd in the user.router.js
+
+// rather than just using "/users" we have to define what we are using weather we are using api or not so what we do is we add 
+// api and its first version v1 here mmaybe in future we make its version 2 so we write it down like this
+
+
+
+app.use("/api/v1/users", userRouter)
+// "http://localhost:8000/api/v1/users" will be 
+
+
+
+
+
 export {app}
 
 
