@@ -37,7 +37,7 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
+        unique: [true, "Username already taken"],
         lowercase: true,
         trim: true,
         index: true
@@ -47,7 +47,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: [true, "This email already existed"],
         lowercase: true,
         trim: true
     },
@@ -124,7 +124,7 @@ userSchema.pre("save", async function(next)
 {
     if(this.isModified("password"))
     {
-        this.password = bcrypt.hash(this.password, 12);
+        this.password = await bcrypt.hash(this.password, 12);
         next();
         // this next is for so that we can now go to next middleware or go next cuz as for now 
         // with this middleware our work is done 

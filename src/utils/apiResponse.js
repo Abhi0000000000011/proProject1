@@ -21,3 +21,5 @@ class APIresponse
         this.success = statusCode; // should be less than 400
     }
 }
+
+export { APIresponse }

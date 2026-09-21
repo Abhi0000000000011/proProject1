@@ -148,6 +148,13 @@ export {app}
 
 // app.use(cookieParser());
 
+// import userRouter from "./routes/user.routes.js";
+// import { registerUser } from "./controllers/user.controller.js";
+
+// app.use("/users", userRouter)
+
+// app.use("/api/v1/users", userRouter)
+
 // export {app}
 
 

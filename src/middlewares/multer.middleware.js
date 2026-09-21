@@ -346,8 +346,8 @@ import multer from "multer"
 // file so we use disk dtorage to save file temporarly
 
 
-
-const crypto = require('crypto')
+// const crypto = require('crypto') changing this to this 
+import crypto from "crypto"
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -408,8 +408,7 @@ export const upload = multer({ storage: storage })
 
 // import multer from "multer"
 
-
-// const crypto = require('crypto')
+// import crypto from "crypto"
 
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
