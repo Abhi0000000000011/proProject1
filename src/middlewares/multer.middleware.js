@@ -363,12 +363,9 @@ const storage = multer.diskStorage({
     // only 
     cb(null, './public/temp');
   },
-  filename: function (req, file, cb) { // setting up file name 
-    crypto.randomBytes(16, function (err, raw) {
-      if (err) return cb(err)
-      cb(null, file.fieldname + '-' + raw.toString('hex')) // this is the else case
+  filename: function (req, file, cb) { // setting up file name
+      cb(null, file.originalname) // this is the else case
     console.log(file); // just to see whats inside the file 
-    })
   }
 })
 

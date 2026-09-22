@@ -61,6 +61,39 @@ cloudinary.config({
 
 // creating a method to upload file in cloudinary and unlinking the file from our local storage and server 
 
+// const uploadOnCloudinary = async (localFilePath) => {
+//     try {
+//         if(!localFilePath)
+//         {
+//             console.log("Could not find the file path !!!");
+//             return;
+//         }
+//         // uploading file 
+//         const response = await cloudinary.uploader.upload(localFilePath, {
+//             resource_type: "auto"
+//             // now it will auto detect which type of file user has given and we are uploading 
+//         });
+//         // we can also further describe our file here in upload like weather it is a png or a video or a svg or something else
+//         // now here file has been uploaded successfully 
+//         console.log(response);
+//         return response;
+//         // returning response as now user can take anything what it wants as the response has all the data about the file 
+//         // its url size etc btw most imp is url and other are just nothing but still 
+//     } catch (error) {
+//         // if we catch error here we know that the file is uploaded in our local server so the main problem is 
+//         // here when we are uploading it to the cloudinary which means that file is what causing error so 
+//         // we should remove it from the server bcz it is causing problem for us 
+//         fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation failed
+//         return null;
+
+//     }
+// }
+
+
+// export {uploadOnCloudinary}
+
+// as we know now our files are uploading so now we have to unlinkk the files even when they are created 
+
 const uploadOnCloudinary = async (localFilePath) => {
     try {
         if(!localFilePath)
@@ -75,7 +108,9 @@ const uploadOnCloudinary = async (localFilePath) => {
         });
         // we can also further describe our file here in upload like weather it is a png or a video or a svg or something else
         // now here file has been uploaded successfully 
-        console.log(response);
+        // console.log(response);
+        fs.unlinkSync(localFilePath);
+        // this will now remove the file even when there is no error and file is created
         return response;
         // returning response as now user can take anything what it wants as the response has all the data about the file 
         // its url size etc btw most imp is url and other are just nothing but still 

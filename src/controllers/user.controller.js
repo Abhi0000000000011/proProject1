@@ -142,13 +142,14 @@ const registerUser = asyncHandler(async (req, res) => {
 // but here we want email and username if either one we find already exist we will return err that user already exist
 // so for that we use $or 
 
-const existedUser = User.findOne({    
+const existedUser = await User.findOne({    
         $or: [{ username }, { email }]
         // passing n no. of objects we want to find but here we only want email and username so will be sending only 2
     })
 
 if(existedUser)
 {
+    console.log(existedUser);
     return new APIerror(409, "User wth email or username already existed ");
     // we can further narrow dowen and find from which it is coming from either from username or from email but we have to 
     // do it ourself
@@ -163,9 +164,11 @@ if(existedUser)
 // may not be an object with .path we will get the path uploaded by the multer
 
 const avatarLocalPath = req.files?.avatar[0]?.path;
-// local path is bbcz it is still in our server rn but not inn our cloud(cloudinary)
+console.log(req.files)
+// local path is bcz it is still in our server rn but not inn our cloud(cloudinary)
 
-const coverImageLocalPath = req.files?.coverImage[0]?.path;
+const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+// here first checking if there is a coverimage or not 
 
 // these both images path can or cannot be there but we needd the avatar image path to be there ass it is necessary to be there 
 
@@ -218,7 +221,7 @@ const user = await User.create({
 // here we chain a select method to remove
 // though in select field wee pass those which we want to select but here which we select we want them to be removed from response
 // here with a "-" we write those things we dont want in the response 
-const createdUser = User.findById(user_id).select(
+const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
 );
 // so after this there will be no pasword and refresh token in the response tht we will be sending to the frontend or in this 
@@ -240,10 +243,11 @@ else
 return res.status(201).json(
     new APIresponse(200, createdUser, "User registered successfully")
 )
+// the id we get from mongodb when user is created is a bson data id
 
 })
 
- 
+
 
 
 

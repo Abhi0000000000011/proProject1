@@ -37,7 +37,7 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: [true, "Username already taken"],
+        unique: true,
         lowercase: true,
         trim: true,
         index: true
@@ -47,7 +47,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: [true, "This email already existed"],
+        unique: true,
         lowercase: true,
         trim: true
     },
@@ -120,17 +120,39 @@ const userSchema = new Schema({
 
 // so to only make this method run when we chage password we do 
 
-userSchema.pre("save", async function(next) 
-{
-    if(this.isModified("password"))
-    {
-        this.password = await bcrypt.hash(this.password, 12);
-        next();
-        // this next is for so that we can now go to next middleware or go next cuz as for now 
-        // with this middleware our work is done 
-    }
+// userSchema.pre("save", async function(next) 
+// {
+//     if(!this.isModified("password"))
+//     {
+//         return next();
+//         // this next is for so that we can now go to next middleware or go next cuz as for now 
+//         // with this middleware our work is done 
+//     }
+//     try
+//     {
+        
+//         this.password = await bcrypt.hash(this.password, 12);
+//         next();
+//     }
+//     catch(err)
+//     {
+//         next(err);
+//         // passing error to mongoose
+//     }
     
-})
+// })
+// we did not need next we can do this dowen below
+
+userSchema.pre("save", async function() {
+    // If password wasn't modified, just return and do nothing
+    if (!this.isModified("password")) return;
+
+    // Otherwise, hash the password
+    this.password = await bcrypt.hash(this.password, 12);
+});
+
+
+
 
 // as mongoose give us in build methods and give us freedom to make our own methods we can make a method to check weather a 
 // user is a vaild user or not by checking its password as we know we have encrypted the password so 
@@ -229,7 +251,7 @@ userSchema.methods.isPasswordCorrect = async function(password)// the password u
 
 // we can also make a access token generate method too here 
 
-userSchema.methods.generateAccessTokent = async function()
+userSchema.methods.generateAccessToken = async function()
 {
     return await jwt.sign( // here this jwt.sign return access token when it is ready here 
         {

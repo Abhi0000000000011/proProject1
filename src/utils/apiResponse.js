@@ -18,7 +18,7 @@ class APIresponse
         this.message = message;
         // This is NOT passed as an argument. 
         // Instead, we are calculating it automatically based on the statusCode!
-        this.success = statusCode; // should be less than 400
+        this.success = statusCode < 400; // should be less than 400
     }
 }
 
