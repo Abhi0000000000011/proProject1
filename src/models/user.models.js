@@ -36,17 +36,21 @@ const userSchema = new Schema({
 
     username: {
         type: String,
-        required: true,
+        required: [true, "User name is required"],
         unique: true,
-        lowercase: true,
         trim: true,
-        index: true
+        // automatically removes any whitespace (spaces, tabs, or newlines) from the beginning and the 
+        // end of a string before saving it to your MongoDB database
+        index: true,
         // index true we do for those which are searcable items like username will be one of the most searchable thing
+        lowercase: true,
+        // lowercase is true bcz we dont want any useless things like "Hello" and "hELLo"
+        // okh boi
     },
 
     email: {
         type: String,
-        required: true,
+        required: [true, "Email is required"],
         unique: true,
         lowercase: true,
         trim: true
@@ -145,12 +149,16 @@ const userSchema = new Schema({
 
 userSchema.pre("save", async function() {
     // If password wasn't modified, just return and do nothing
-    if (!this.isModified("password")) return;
+    if(!this.isModified("password")) return;
 
     // Otherwise, hash the password
     this.password = await bcrypt.hash(this.password, 12);
 });
 
+// this function will also work for new users bcz :- 
+// In Mongoose, when a brand-new document is created and saved to the database for the very first time, 
+// every single field is considered "modified" because it is going from "non-existent" to "having a value."
+// which here means password is getting modified so this function will come in clutch
 
 
 
@@ -252,8 +260,12 @@ userSchema.methods.isPasswordCorrect = async function(password)// the password u
 // we can also make a access token generate method too here 
 
 userSchema.methods.generateAccessToken = async function()
+// JWTs are Encoded, Not Encrypted
 {
-    return await jwt.sign( // here this jwt.sign return access token when it is ready here 
+    return jwt.sign( // here this jwt.sign return access token when it is ready here 
+//         That is a very logical question! Because generating a token involves cryptography, it feels like it 
+// should be an asynchronous operation that takes time. However, jwt.sign() in the standard jsonwebtoken library is 
+// actually synchronous by default. Here is why it doesn't need to be async
         {
             _id: this._id,
             email: this.email,
@@ -262,7 +274,9 @@ userSchema.methods.generateAccessToken = async function()
             // this first fullname is the name of the payload key and the second this.fullName is what coming from the database
             // so this.fullName in this "fullName" must match with "fullName" which is stored in the db we cant use "fullname"
         },
-        // another thigit wants is the access token secret 
+        // here we are not using those things wich a user can change in the future like avatar he can change so we dont use it 
+        // before anything check refresh token 
+        // another thing it wants is the access token secret 
         process.env.ACCESS_TOKEN_SECRET,
         {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
@@ -274,9 +288,12 @@ userSchema.methods.generateAccessToken = async function()
 // and just like our access token our refresh token is also generated like this 
 userSchema.methods.generateRefreshToken = async function()
 {
-    return await jwt.sign( // here this jwt.sign return refresh token when it is ready here 
+    return jwt.sign( // here this jwt.sign return refresh token when it is ready here 
         {
             _id: this._id
+            // here only id as id is the only thing that the user cannot change 
+            // but other things like password email or username or other things he or she can chage within the timeperiod 
+            // of refresh token 
             // this refresh token has less info as it gets refreshed time to time so we dont store that much data in it 
         },
         process.env.REFRESH_TOKEN_SECRET,
@@ -330,9 +347,6 @@ export const User = mongoose.model("User", userSchema);
 
 
 
-
-// // using without any comments here we are 
-
 // import mongoose, {Schema} from "mongoose";
 // import jwt from "jsonwebtoken"
 // import bcrypt from "bcrypt"
@@ -341,16 +355,16 @@ export const User = mongoose.model("User", userSchema);
 
 //     username: {
 //         type: String,
-//         required: true,
+//         required: [true, "User name is required"],
 //         unique: true,
-//         lowercase: true,
 //         trim: true,
-//         index: true
+//         index: true,
+//         lowercase: true,
 //     },
 
 //     email: {
 //         type: String,
-//         required: true,
+//         required: [true, "Email is required"],
 //         unique: true,
 //         lowercase: true,
 //         trim: true
@@ -369,10 +383,10 @@ export const User = mongoose.model("User", userSchema);
 //     },
 
 //     coverImage: {
-//         type: String, 
+//         type: String,
 //     },
 
-//     password: {
+//     password: { 
 //         type: String,
 //         required: [true, "Password is required"]
 //     },
@@ -390,25 +404,21 @@ export const User = mongoose.model("User", userSchema);
 // }, {timestamps: true})
 
 
-// userSchema.pre("save", async function(next) 
-// {
-//     if(this.isModified("password"))
-//     {
-//         this.password = bcrypt.hash(this.password, 12);
-//         next();
-//     }
-    
-// })
+// userSchema.pre("save", async function() {
+//     if(!this.isModified("password")) return;
+
+//     this.password = await bcrypt.hash(this.password, 12);
+// });
 
 // userSchema.methods.isPasswordCorrect = async function(password)
-// {
+// { 
 //     return await bcrypt.compare(password, this.password);
 // }
 
 
-// userSchema.methods.generateAccessTokent = async function()
+// userSchema.methods.generateAccessToken = async function()
 // {
-//     return await jwt.sign( 
+//     return jwt.sign(
 //         {
 //             _id: this._id,
 //             email: this.email,
@@ -421,9 +431,10 @@ export const User = mongoose.model("User", userSchema);
 //         },
 //     )
 // }
+
 // userSchema.methods.generateRefreshToken = async function()
 // {
-//     return await jwt.sign( 
+//     return jwt.sign(
 //         {
 //             _id: this._id
 //         },
@@ -435,5 +446,6 @@ export const User = mongoose.model("User", userSchema);
 // }
 
 // export const User = mongoose.model("User", userSchema);
+
 
 

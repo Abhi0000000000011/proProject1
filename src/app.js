@@ -9,7 +9,7 @@ const app = express();
 
 // configuration of cors // this is a  middleware as we are using app.use
 app.use(cors({
-    // origin here means which which origins we are allowing 
+    // origin here means from which origins we are allowing 
     // this origin 
     origin: process.env.CORS_ORIGIN,
     credentials: true // credentials = creds
@@ -33,7 +33,7 @@ app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "20kb"}))
 // extended here means we can pass objects inside the objects and limit we know about it 
 
-app.use(express.static("public")); // means we can store public assets or what things we want to storein this folder
+app.use(express.static("public")); // means we can store public assets or what things we want to store in this folder
 // this is for whenever we want to store a file or a folder or images i want to store in my own folder so we declare a public
 // folder that we can store our public assets 
 
@@ -70,19 +70,18 @@ app.use(cookieParser());// setting up cookieparser
 
 // routes import
 import userRouter from "./routes/user.routes.js";
-import { registerUser } from "./controllers/user.controller.js";
 
 // routes decleration
 
 // first we were using 
-// app.get() here we did not expect any routing as with the help of app we were declearing routes and controllers here only 
+// app.get() here we did not expect any routing as with the help of app we were declearing routes and controllers here only
 // but now as we have saparated the routes and controllers so now we need the help of middleware to bring the route
 // this is complusory as this is the syntax
 
 // app.use("/users", userRouter)
 // here the first one is the route and the second one is the router 
 
-app.use("/users", userRouter)
+// app.use("/users", userRouter)
 // now when any user reaches for example "http://localhost:8000/users"our server will give control to the userRouter 
 // thann we will do the things which willl be performedd in the user.router.js
 

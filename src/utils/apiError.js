@@ -54,6 +54,12 @@ class APIerror extends Error
     )
     {
         super(message)
+        // the message we get when there is an error
+        // The Error class already has built-in logic for handling error messages, stack formatting, and logging.
+
+        // By writing super(message), you are calling the constructor of the parent Error class and handing it the error message.
+        // If you don't call super(message), the built-in Error won't know what message it holds, and properties like 
+        // err.message won't work correctly.
         this.statusCode = statusCode; // should be more than 400 or equal to it
         this.message= message;
         // passing data although it is not necessary to be there as a paramater in the constructor
@@ -61,6 +67,9 @@ class APIerror extends Error
         this.success = false;
         this.errors = errors;
 
+        // The if (stack) case: This is a safety check. Sometimes, 
+        // if you are wrapping an error or testing, you might want to manually pass in a custom stack trace. 
+        // If you do, it uses yours.
         if(stack)
         {
             this.stack = stack
@@ -71,6 +80,17 @@ class APIerror extends Error
             // If a custom stack isn't passed (which is 99% of the time), 
             // this tells Node.js: "Hey, automatically generate a fresh stack trace right now."
         }
+//         Why do we need Error.captureStackTrace?
+        // When an error happens in Node.js, it generates a "stack trace" (the list of file paths showing step-by-step
+        //  where the error occurred).
+        // Without captureStackTrace, your error logs would point directly inside your APIerror.js file constructor 
+        // every time an error happens. That isn't very helpful because you already know the error happened 
+        // inside your custom class.
+        // What you actually want to see in your terminal is where in your controller or route you called new APIerror(...).
+        // Error.captureStackTrace(this, this.constructor) tells Node.js: "Generate a stack trace for this error, 
+        // but start it right after the APIerror constructor was called."
+        // This keeps your error logs clean and points you straight to the exact line in your controller or middleware 
+        // where things went wrong!
         
     }
 }

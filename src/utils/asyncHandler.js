@@ -61,3 +61,36 @@ export { asyncHandler }
 // we will be using this function in express as app.get('/profile', asyncHandler(getMyProfile)) as middleware or a utility 
 // so express will be needing something which it will get when we will return something to it doing insidethe async function 
 // only dont do the things 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // again with no comment code 
+
+// const asyncHandler = (requestHandler) => {
+//     return (req, res, next) => {
+//         Promise.resolve(
+//             requestHandler(req, res, next)
+//         ).catch(
+//             (err) => next(err)
+//         )
+//     }
+// }
+
+// export { asyncHandler }
+

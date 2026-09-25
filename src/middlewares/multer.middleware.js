@@ -341,13 +341,14 @@
 
 import multer from "multer"
 
-// we will bw saving our file in the local storage the file that is given by the user weathre it is a image or a video
+// we will bw saving our file in the local storage the file that is given by the user weather it is a image or a video
 // or a pdf anything so we store in DiskStorage not in memory storage bcz memory storage can be filled if there is a large 
-// file so we use disk dtorage to save file temporarly
+// file so we use disk storage to save file temporarly
 
 
 // const crypto = require('crypto') changing this to this 
 import crypto from "crypto"
+// not using crypto chaning it to this simple code not chaging the file name 
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -417,6 +418,25 @@ export const upload = multer({ storage: storage })
 //       cb(null, file.fieldname + '-' + raw.toString('hex')) 
 //     console.log(file); 
 //     })
+//   }
+// })
+
+// export const upload = multer({ storage: storage })
+
+
+
+
+
+// easy and sort one
+
+// import multer from "multer"
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//     cb(null, './public/temp');
+//   },
+//   filename: function (req, file, cb) { 
+//       cb(null, file.originalname) 
+//     console.log(file); 
 //   }
 // })
 

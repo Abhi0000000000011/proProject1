@@ -120,6 +120,8 @@ const uploadOnCloudinary = async (localFilePath) => {
         // we should remove it from the server bcz it is causing problem for us 
         fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation failed
         return null;
+        // back there in !localfilepath we return othing measn uundefined as we dont want to send anything 
+        // but now we need to send back a data value as that time we dot care that much as that was the starting of the code
 
     }
 }
@@ -170,6 +172,7 @@ export {uploadOnCloudinary}
 //         const response = await cloudinary.uploader.upload(localFilePath, {
 //             resource_type: "auto"
 //         });
+//         fs.unlinkSync(localFilePath);
 //         console.log(response);
 //         return response;
 //     } catch (error) {
@@ -181,3 +184,5 @@ export {uploadOnCloudinary}
 
 
 // export {uploadOnCloudinary}
+
+

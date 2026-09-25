@@ -95,7 +95,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // url we do diff things we will do it further
 
     // creatng a obj so that i can store all the things i want from req.body
-    const {fullName, username, email, password} = req.body; // theseare the things i want from the user which will be
+    const {fullName, username, email, password} = req.body; // these are the things i want from the user which will be
     // send by the frontend
     console.log("email: ", email);
     console.log("password: ", password);
@@ -126,7 +126,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // Returns a boolean—true if the callback returns a truthy value for at least one element, and false otherwise.
     if([fullName, email, username, password].some((field) => {
         return field?.trim === ""
-        // this will return true if any of the given fiels is empty 
+        // this will return true if any of the given field's is empty 
     }))
     {
         // this will run if any of the given field is empty 
@@ -155,15 +155,16 @@ if(existedUser)
     // do it ourself
 }
 
-// as we know that req.body contain alll the data fromm the user, we also are using a middleware in userroute
-// where middleware give us more methodsand option and one of them is req.files
+// as we know that req.body contain alll the data fromm the user, we also are using a middleware in user_route
+// where middleware give us more methods and option and one of them is req.files
 
-// here is this optional symbol bcz there can be a file of avatar or not depend on the uer
+// here is this optional symbol bcz there can be a file of avatar or not depend on the user
 // req.files?.avatar[0]
 // there will be multiple property of avatar here but we need its first propeerty bcz in first property there may or 
 // may not be an object with .path we will get the path uploaded by the multer
 
 const avatarLocalPath = req.files?.avatar[0]?.path;
+// here asssuming that avatar is there but not down there 
 console.log(req.files)
 // local path is bcz it is still in our server rn but not inn our cloud(cloudinary)
 
@@ -183,7 +184,12 @@ const avatar = await uploadOnCloudinary(avatarLocalPath)
 // this will take time as it depends on the internet and the size of file so we use await
 // and that is why we use async in the starting 
 
-const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+let coverImage;
+
+    if(coverImageLocalPath)
+    {
+        coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    }
 
 
 // again checking for avatar as avatar is a req field checking if it goes to the database or not
@@ -199,7 +205,6 @@ if(!avatar)
 // there maybe an error here as we are dealing with database so nothing is garenteed 
 // we can handle error with the async handler but what about the time that it will take while handeling the error 
 // so for that we use async in this User.create
-
 const user = await User.create({
     fullName,
     avatar: avatar.url,
@@ -210,6 +215,8 @@ const user = await User.create({
     email,
     password,
     username: username.toLowerCase()
+    // fullName, email, and password don't need .url because they are just raw text strings coming straight from your 
+    // req.body JSON data, and username: username.toLowerCase() ensures it's neatly formatted before saving!
 
 })
 
@@ -218,9 +225,15 @@ const user = await User.create({
 
 // const isCreated = User.findById(user_id);
 
+// const createdUser = await User.findById(user._id)
+// created user having password and refresh token in it which is a bad practice 
+
+
 // here we chain a select method to remove
 // though in select field wee pass those which we want to select but here which we select we want them to be removed from response
 // here with a "-" we write those things we dont want in the response 
+
+
 const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
 );
@@ -243,7 +256,7 @@ else
 return res.status(201).json(
     new APIresponse(200, createdUser, "User registered successfully")
 )
-// the id we get from mongodb when user is created is a bson data id
+// the id we get from mongodb when user is created is a json data id
 
 })
 
@@ -252,3 +265,127 @@ return res.status(201).json(
 
 
 export {registerUser}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// here we are again with o comments code 
+
+
+// import { asyncHandler } from "../utils/asyncHandler.js";
+// import { APIerror } from "../utils/apiError.js";
+// import { User } from "../models/user.models.js";
+// import { uploadOnCloudinary } from "../utils/cloudinary.js";
+// import { APIresponse } from "../utils/apiResponse.js";
+
+
+
+
+// const registerUser = asyncHandler(async (req, res) => {
+
+//     const {fullName, username, email, password} = req.body; 
+
+//     console.log("email: ", email);
+//     console.log("password: ", password);
+//     console.log("username: ", username);
+
+//     if([fullName, email, username, password].some((field) => {
+//         return field?.trim === ""
+//     }))
+//     {
+//         throw new APIerror(400, "All Fields are required");
+//     }
+
+// const existedUser = await User.findOne({    
+//         $or: [{ username }, { email }]
+//     })
+
+// if(existedUser)
+// {
+//     console.log(existedUser);
+//     return new APIerror(409, "User wth email or username already existed ");
+// }
+
+// const avatarLocalPath = req.files?.avatar[0]?.path;
+// console.log(req.files)
+
+// const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+// if(!avatarLocalPath)
+// {
+//     throw new APIerror(400, "Avatar file is required");
+// }
+
+// const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+// let coverImage;
+
+//     if(coverImageLocalPath)
+//     {
+//         coverImage = await uploadOnCloudinary(coverImageLocalPath)
+//     }
+
+// if(!avatar)
+// {
+//     throw new APIerror(400, "Avatar file is req");
+// }
+
+// const user = await User.create({
+//     fullName,
+//     avatar: avatar.url,
+//     coverImage: coverImage?.url || "",
+//     email,
+//     password,
+//     username: username.toLowerCase()
+
+// })
+
+// const createdUser = await User.findById(user._id).select(
+//     "-password -refreshToken"
+// );
+
+// if(!createdUser)
+// {
+//     throw new APIerror(500, "Something went wrong while registering the user");
+// }
+// else
+// {
+//     console.log(createdUser);
+// }
+
+// return res.status(201).json(
+//     new APIresponse(200, createdUser, "User registered successfully")
+// )
+
+// })
+
+
+
+
+
+// export {registerUser}
