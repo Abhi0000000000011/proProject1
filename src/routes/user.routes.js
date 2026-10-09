@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const userRouter = Router()
@@ -12,7 +13,7 @@ const userRouter = Router()
 // as we know how middleware works so we will add this middleware bfore using registerUser
 userRouter.route("/register").post(
     upload.fields([
-        // passsing an array of our files here we are accepting avatar and coveriage if any so we will do
+        // passsing an array of our files here we are accepting avatar and coverImage if any so we will do
         {
             name: "avatar",
             // name should be matched with the model name 
@@ -21,7 +22,7 @@ userRouter.route("/register").post(
         },
         {
             name: "coverImage",
-            // if there is no coverimage there we are using "" so we dont needd to check that is there really a coverimage or not
+            // if there is no coverimage there we are using "" so we dont need to check that is there really a coverimage or not
             maxCount: 1
         }
 
@@ -32,6 +33,23 @@ userRouter.route("/register").post(
     // with this uploading details of our user in the db 
 )
 
+userRouter.route("/login").post(loginUser)
+
+// secured Routes
+// userRouter.route("/logout").post(logoutUser)
+
+// adding a middleware here 
+userRouter.route("/logout").post(verifyJWT, logoutUser)
+// middleware is before going to the next one pass through me here logoutUser method is the next and verifyJWT is the middleware
+// which will run just before the logoutUser
+// the next in the middleware tells that this function when gets completed run the next method which here is logoutUser
+
+
+// we can also do like this if there are multiple middlewares 
+// userRouter.route("/logout").post(verifyJWT, anotherMiddleware1, another2, logoutUser)
+// how many we want in a sequence we want 
+
+userRouter.route("/refresh-token").post(refreshAccessToken)
 
 export default userRouter
 
@@ -44,8 +62,9 @@ export default userRouter
 // // again without comments 
 
 // import { Router } from "express";
-// import { registerUser } from "../controllers/user.controller.js";
+// import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
 // import {upload} from "../middlewares/multer.middleware.js";
+// import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 // const userRouter = Router()
@@ -64,6 +83,14 @@ export default userRouter
 //     ]),
 //     registerUser
 // )
+
+// userRouter.route("/login").post(loginUser)
+
+// userRouter.route("/logout").post(verifyJWT, logoutUser)
+
+// userRouter.route("/refresh-token").post(refreshAccessToken)
+
+
 
 
 // export default userRouter

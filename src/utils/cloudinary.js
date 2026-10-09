@@ -50,11 +50,12 @@ import fs from "fs"
 
 // Configuration of cloudinary
 // which give us permission to upload files in cloudinary 
+
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
     api_key: process.env.CLOUDINARY_API_KEY, 
     api_secret: process.env.CLOUDINARY_API_SECRET 
-});
+}); 
     
 
 
@@ -94,6 +95,7 @@ cloudinary.config({
 
 // as we know now our files are uploading so now we have to unlinkk the files even when they are created 
 
+// localfilepath here is = is the string path pointing to where the file is temporarily stored on our computer's hard drive
 const uploadOnCloudinary = async (localFilePath) => {
     try {
         if(!localFilePath)
@@ -118,6 +120,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         // if we catch error here we know that the file is uploaded in our local server so the main problem is 
         // here when we are uploading it to the cloudinary which means that file is what causing error so 
         // we should remove it from the server bcz it is causing problem for us 
+        console.log("There was an error uploading the file :", error);
         fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation failed
         return null;
         // back there in !localfilepath we return othing measn uundefined as we dont want to send anything 

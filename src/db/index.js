@@ -1,3 +1,7 @@
+
+// MongoDB does not use traditional SQL joins because it is a NoSQL document database, not a relational database
+
+
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 

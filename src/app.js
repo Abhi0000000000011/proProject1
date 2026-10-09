@@ -33,11 +33,15 @@ app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "20kb"}))
 // extended here means we can pass objects inside the objects and limit we know about it 
 
-app.use(express.static("public")); // means we can store public assets or what things we want to store in this folder
-// this is for whenever we want to store a file or a folder or images i want to store in my own folder so we declare a public
-// folder that we can store our public assets 
+// if our public folder is empty what is there to share to the outsidde world this step as currently we are not 
+// storing anything in our public folder
+app.use(express.static("public")); // when we store public assets or what things we want to store in this folder
+// express.static("public") actually does is make those files available to the outside world (web browsers and clients) 
+// which are present in this folder via HTTP URLs.Any file you put inside that folder will be accessible over the 
+// internet to anyone who visits your website's URL, as long as your server is running and deployed live.
 
 app.use(cookieParser());// setting up cookieparser
+// with the help of which we are able to use cookies in user.controller.js 
 
 
 // app.get();
@@ -125,7 +129,7 @@ export {app}
 
 
 
-// this is without any comments here it is 
+// // this is without any comments here it is 
 
 
 // import express from "express"
@@ -135,8 +139,10 @@ export {app}
 // const app = express();
 
 // app.use(cors({
+
 //     origin: process.env.CORS_ORIGIN,
 //     credentials: true
+
 // }))
 
 // app.use(express.json({limit: "16kb"}))
@@ -146,14 +152,11 @@ export {app}
 // app.use(express.static("public"));
 
 // app.use(cookieParser());
-
 // import userRouter from "./routes/user.routes.js";
-// import { registerUser } from "./controllers/user.controller.js";
-
-// app.use("/users", userRouter)
 
 // app.use("/api/v1/users", userRouter)
 
 // export {app}
+
 
 

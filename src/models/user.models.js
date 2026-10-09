@@ -4,7 +4,7 @@
 
 
 
-// we will also be using  a dependency called bcrypt 
+// we will also be using a dependency called bcrypt 
 // npm install bcrypt 
 // this is also a dependency which is called bcryptjs which is also a dependency works same like bcrypt 
 // but there is a difference between both almost working is same too 
@@ -107,7 +107,6 @@ const userSchema = new Schema({
 //     // the same password which we dont want as there will be already  user's password encrypted and we dont
 //     // want it to change unnecessarily
 //     // so we want that when we are doing things with the password field than only run this otherwise ignore it 
-
 // });
 
 // userSchema.pre("save", async function (next) {
@@ -259,7 +258,7 @@ userSchema.methods.isPasswordCorrect = async function(password)// the password u
 
 // we can also make a access token generate method too here 
 
-userSchema.methods.generateAccessToken = async function()
+userSchema.methods.generateAccessToken = function()
 // JWTs are Encoded, Not Encrypted
 {
     return jwt.sign( // here this jwt.sign return access token when it is ready here 
@@ -286,7 +285,7 @@ userSchema.methods.generateAccessToken = async function()
     // jwt has a sign method which generate token we also give sign a payload which can be string or an object 
 }
 // and just like our access token our refresh token is also generated like this 
-userSchema.methods.generateRefreshToken = async function()
+userSchema.methods.generateRefreshToken = function()
 {
     return jwt.sign( // here this jwt.sign return refresh token when it is ready here 
         {
@@ -415,8 +414,14 @@ export const User = mongoose.model("User", userSchema);
 //     return await bcrypt.compare(password, this.password);
 // }
 
+// userSchema.methods.isPasswordCorrect = async function(password)// the password user has given rn
+// {
+//     return await bcrypt.compare(password, this.password);
+// }
 
-// userSchema.methods.generateAccessToken = async function()
+
+
+// userSchema.methods.generateAccessToken = function()
 // {
 //     return jwt.sign(
 //         {
@@ -432,7 +437,7 @@ export const User = mongoose.model("User", userSchema);
 //     )
 // }
 
-// userSchema.methods.generateRefreshToken = async function()
+// userSchema.methods.generateRefreshToken = function()
 // {
 //     return jwt.sign(
 //         {

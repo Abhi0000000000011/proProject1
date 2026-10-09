@@ -1,5 +1,5 @@
-// // here we will make the function of the database connectivity here as we are making a saparate folder for the async function 
-// // we can make it in two ways by try and catch and another is promises
+// // here we will make the function just like the database connectivity as we are making a saparate folder for the 
+// // async function  we can make it in two ways by try and catch and another is promises
 
 // // this is a higher order function those function which treat other functions as variables or parameters which 
 // // we can pass in that higher order function 
@@ -18,7 +18,7 @@
 //     catch(err)
 //     {
 //         res.status(err.code || 500).json({
-//             // this jason response is to clear things out for the frontend engineer so that he may figure out 
+//             // this json response is to clear things out for the frontend engineer so that he may figure out 
 //             // that if there is a error or not 
 //             success: false,
 //             message: err.message

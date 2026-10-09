@@ -19,7 +19,8 @@
 // action="/profile": Tells the browser to send the submitted data to the /profile route on your server.
 // method="post": Specifies that this is a POST request (used for sending/creating data).
 
-// enctype="multipart/form-data": Crucial. By default, HTML forms send data as plain text 
+// enctype="multipart/form-data": Crucial.
+//  By default, HTML forms send data as plain text  so for files we use this attribute 
 // (application/x-www-form-urlencoded). This attribute tells the browser to split the request 
 // into "parts" so binary file data can travel safely alongside regular text.
 
@@ -146,6 +147,7 @@
 // // 1. Define the fileFilter function
 // const fileFilter = (req, file, cb) => {
 //   // Check the file's mimetype (e.g., 'image/jpeg', 'image/png', 'application/pdf')
+//   // MIME type (Multipurpose Internet Mail Extension) = type/subtype eg image/png 
 //   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
 //     // Accept the file
 //     cb(null, true);
@@ -159,6 +161,7 @@
 // const upload = multer({ 
 //   dest: 'uploads/',
 //   fileFilter: fileFilter,
+// Multer has a built-in fileFilter option which is used for our custom file filter process
 //   limits: { fileSize: 1024 * 1024 * 2 } // Optional: limit size to 2MB
 // });
 
@@ -341,6 +344,12 @@
 
 import multer from "multer"
 
+// local Storage = capacity is low used to store mostly strings ie text fields local Storage is built into 
+// the user's web browser (Chrome, Safari, etc.).
+// diskStorage = is the physical or virtual hard drive of the computer/server running your Node.js application 
+// (like an AWS server, a DigitalOcean droplet, or your own laptop during development)
+// thats why its capacity is massive 
+
 // we will bw saving our file in the local storage the file that is given by the user weather it is a image or a video
 // or a pdf anything so we store in DiskStorage not in memory storage bcz memory storage can be filled if there is a large 
 // file so we use disk storage to save file temporarly
@@ -358,7 +367,7 @@ const storage = multer.diskStorage({
     // the user req but not files for which we use multer
     // this cb is callback
     // cb(null, '/tmp/my-uploads')
-    // here in callback its first parameter is nulll and its second parameter is '/tmp/my-uploads' tis is the
+    // here in callback its first parameter is null and its second parameter is '/tmp/my-uploads' this is the
     // destination folder where we will be putting all our files coming from the user 
     // but  here we will be putting the files in "./public/temp" as we have created it we know in the starting for this purpose
     // only 

@@ -61,6 +61,7 @@ dotenv.config({path: './.env'})
 
 // const app = express();
 
+// IIFE - immediately invoked function expression 
 // ;(async () => {
 //     try{
 //         await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
