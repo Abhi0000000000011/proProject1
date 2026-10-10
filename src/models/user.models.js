@@ -85,6 +85,14 @@ const userSchema = new Schema({
     ],
     refreshToken: {
         type: String
+    },
+
+    avatarPublicId: {
+        type: String
+    },
+
+    coverImagePublicId: {
+        type: String
     }
 
 }, {timestamps: true})
@@ -175,10 +183,6 @@ userSchema.methods.isPasswordCorrect = async function(password)// the password u
     // first thing we pass is the current password given by the user 2nd thing is the encrypted password
     // this library compare both and than return a boolean value 
 }
-
-
-
-
 
 
 
@@ -397,6 +401,14 @@ export const User = mongoose.model("User", userSchema);
 //         }
 //     ],
 //     refreshToken: {
+//         type: String
+//     },
+
+//     avatarPublicId: {
+//         type: String
+//     },
+
+//     coverImagePublicId: {
 //         type: String
 //     }
 

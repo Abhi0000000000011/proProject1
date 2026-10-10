@@ -38,7 +38,7 @@ export const verifyJWT = asyncHandler(async(req, res, next) => {
             throw new APIerror(400, "Invalid Access Token");
         }
     
-        req.user = user;
+        req.user = user; // this req.user is used in multiple fields 
         // adding a new obj in the req and giving it the access of the user obj;
     
         next();

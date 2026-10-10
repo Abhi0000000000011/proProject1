@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
+import { changeAvatar, changeCoverImage, changeCurrentPassword, changeEmail, changeusername, loginUser, logoutUser, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -50,6 +50,25 @@ userRouter.route("/logout").post(verifyJWT, logoutUser)
 // how many we want in a sequence we want 
 
 userRouter.route("/refresh-token").post(refreshAccessToken)
+
+// userRouter.route("/coverImageUpdate").patch(verifyJWT, changeCoverImage); we dont write like this our routes 
+userRouter.route("/cover-image-update").patch(upload.single([
+    {name: "coverImage", maxCount: 1}
+]), verifyJWT, changeCoverImage);
+// patch is used when we partially updates to an existing resource. 
+
+userRouter.route("/avatar-update").patch(upload.single([
+    {name: "avatar", maxCount: 1}
+]), verifyJWT, changeAvatar);
+
+userRouter.route("/update-email").patch(verifyJWT, changeEmail);
+
+userRouter.route("/update-fullName").patch(verifyJWT, changeFullName);
+
+userRouter.route("/update-username").patch(verifyJWT, changeusername);
+
+userRouter.route("/update-password").patch(verifyJWT, changeCurrentPassword);
+
 
 export default userRouter
 

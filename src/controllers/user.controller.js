@@ -10,6 +10,8 @@ import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { APIresponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
+import { changeDetail } from "../utils/userDetailChange.js";
+import { changeImage } from "../utils/userImageChange.js";
 // // passing a async function inside our helper function  our first controller which is just for testing '='
 // const registerUser = asyncHandler(async (req, res) => {
 //     res.status(200).json({
@@ -247,8 +249,10 @@ if(!avatar)
 const user = await User.create({
     fullName,
     avatar: avatar.url,
+    avatarPublicId: avatar.public_id,
     // avatar within itself is a whole obj so we will not send it instead we will send a url which is generatedd by coudinary 
     coverImage: coverImage?.url || "",
+    coverImagePublicId: coverImage?.public_id || "",
     // as we know that coverImmage is not neccessary so it may or maynot have a url so for a case where there is no 
     // cover immage we choose option an empty string
     email,
@@ -515,11 +519,89 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 })
 
 
+
+// now making a method which will change password when user wants to change 
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const {oldPassword, newPassword} = req.body;
+    // takking the current password and the new password from the user 
+
+    // When a user is changing their password, they are already logged in and authenticated via their access token. 
+    // Your authentication middleware (verifyJWT) decodes that token, finds the user, and attaches them to req.user. 
+    // req.user is secure because it comes from a verified cryptographic token. req.body can be completely 
+    // manipulated by anyone. If you used req.body.user?._id, a malicious user could pass someone else's user 
+    // ID in the request body and change their password!
+
+    const user = await User.findById(req.user?._id);
+    // const user = User.findById(req.body.user?._id);
+
+    const isCorrectPassword = await user.isPasswordCorrect(oldPassword);
+
+    if(!isCorrectPassword)
+    {
+        throw new APIerror(401, "The password is wrong !!!");
+    }
+
+    user.password = newPassword;
+    // now here that UserSchema.pre("save") will also execute as password is modified
+
+    // now saving the password in our database
+
+
+    // await User.findByIdAndUpdate(req.user._id, 
+    //     {
+    //         $set: {
+    //             password: newPassword
+    //         }
+    //     }, 
+    //     {
+    //         new: true
+    //     }
+    // )
+
+    // we choose this one as we have a save method in our user model which hash the password and we want our new 
+    // password to get encrypted which that upper User.findByIdAndUpdate cannot do 
+    await user.save({validateBeforeSave: false});
+
+    return res.status(200)
+    .json(new APIresponse(200, {}, "Password changed successfully !!!"));
+
+})
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res.status(200)
+    .json(new APIresponse(200, {user: req.user}, "Current user fetched"));
+})
+
+// const updateAccountDetail = asyncHandler(async (req, res) => {
+//     // this below comes under architectural reasoning which is how we architecture our metods 
+//     // whenever we are updating a file make different controllers for them respectvely and end points too 
+//     // so that we can save only that particular file if we save the whole user again and again it will again save 
+//     // the text data and that data which is not changed too which increases the load in our app and db 
+// })
+
+const changeEmail = changeDetail("email");
+
+const changeusername = changeDetail("username");
+
+const changeFullName = changeDetail("fullName");
+
+const changeCoverImage = changeImage("coverImage");
+
+const changeAvatar = changeImage("avatar");
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    changeCoverImage,
+    changeAvatar,
+    changeEmail,
+    changeusername,
+    changeFullName
 }
 
 
@@ -791,15 +873,55 @@ export {
 // })
 
 
+// const changeCurrentPassword = asyncHandler(async (req, res) => {
+//     const {oldPassword, newPassword} = req.body;
+
+//     const user = await User.findById(req.user?._id);
+
+//     const isCorrectPassword = await user.isPasswordCorrect(oldPassword);
+
+//     if(!isCorrectPassword)
+//     {
+//         throw new APIerror(401, "The password is wrong !!!");
+//     }
+
+//     user.password = newPassword;
+
+//     await user.save({validateBeforeSave: false});
+
+//     return res.status(200)
+//     .json(new APIresponse(200, {}, "Password changed successfully !!!"));
+
+// })
+
+// const getCurrentUser = asyncHandler(async (req, res) => {
+//     return res.status(200)
+//     .json(new APIresponse(200, {user: req.user}, "Current user fetched"));
+// })
+
+// const changeEmail = changeDetail("email");
+
+// const changeusername = changeDetail("username");
+
+// const changeFullName = changeDetail("fullName");
+
+// const changeCoverImage = changeImage("coverImage");
+
+// const changeAvatar = changeImage("avatar");
+
 // export {
 //     registerUser,
 //     loginUser,
 //     logoutUser,
-//     refreshAccessToken
+//     refreshAccessToken,
+//     changeCurrentPassword,
+//     getCurrentUser,
+//     changeCoverImage,
+//     changeAvatar,
+//     changeEmail,
+//     changeusername,
+//     changeFullName
 // }
-
-
-
 
 
 
