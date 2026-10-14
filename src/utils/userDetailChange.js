@@ -1,7 +1,7 @@
-import { User } from "../models/user.models";
-import { APIerror } from "./apiError";
-import { APIresponse } from "./apiResponse";
-import { asyncHandler } from "./asyncHandler";
+import { User } from "../models/user.models.js";
+import { APIerror } from "./apiError.js";
+import { APIresponse } from "./apiResponse.js";
+import { asyncHandler } from "./asyncHandler.js";
 
 const changeDetail = (detail) => {
     return asyncHandler(async (req, res) => {
@@ -68,10 +68,10 @@ export { changeDetail }
 
 // // code without comments 
 
-// import { User } from "../models/user.models";
-// import { APIerror } from "./apiError";
-// import { APIresponse } from "./apiResponse";
-// import { asyncHandler } from "./asyncHandler";
+// import { User } from "../models/user.models.js";
+// import { APIerror } from "./apiError.js";
+// import { APIresponse } from "./apiResponse.js";
+// import { asyncHandler } from "./asyncHandler.js";
 
 // const changeDetail = (detail) => {
 //     return asyncHandler(async (req, res) => {

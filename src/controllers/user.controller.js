@@ -12,6 +12,7 @@ import { APIresponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
 import { changeDetail } from "../utils/userDetailChange.js";
 import { changeImage } from "../utils/userImageChange.js";
+import mongoose from "mongoose";
 // // passing a async function inside our helper function  our first controller which is just for testing '='
 // const registerUser = asyncHandler(async (req, res) => {
 //     res.status(200).json({
@@ -313,6 +314,7 @@ return res.status(201).json(
 // 5. if password is correct generate access and refresh token and send them to the user 
 // 6. sending this data ie the tokens in cookies format to user
 
+// this is working in our postman
 const loginUser = asyncHandler(async (req, res) => {
 
     const {email, password, username} = req.body;
@@ -355,6 +357,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
     const option = {
         httpOnly: true,
         secure:  process.env.NODE_ENV === "production" // or we can make it directly "true"
@@ -394,6 +399,8 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 
+
+// this is working in our postman
 
 // now logging out our user 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -456,6 +463,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 
+
+
+// this is working in our postman
+
 const refreshAccessToken = asyncHandler(async(req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
     // req.cookies is for web browser 
@@ -489,7 +500,7 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
     
         const {accessToken, newRefreshToken} = await generateAccessndRferesh(user._id);
         // we declare newRefreshToken not refreshToken as we have decleared refreshToken earlier in this function
-    
+
         const options = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production"
@@ -522,6 +533,7 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 
 // now making a method which will change password when user wants to change 
 
+// this is working in our postman
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const {oldPassword, newPassword} = req.body;
     // takking the current password and the new password from the user 
@@ -580,15 +592,257 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 //     // the text data and that data which is not changed too which increases the load in our app and db 
 // })
 
+// this is working in our postman
 const changeEmail = changeDetail("email");
 
+// this is working in our postman
 const changeusername = changeDetail("username");
 
+// this is working in our postman
 const changeFullName = changeDetail("fullName");
 
+// this is working in our postman
 const changeCoverImage = changeImage("coverImage");
 
+// this is working in our postman
 const changeAvatar = changeImage("avatar");
+
+// aggregation pipelines
+
+// hese aggregation pipelines do not save data in the database but only trigger when needed and 
+// give us info which we want and than disappears
+
+
+
+// 1. req.params (Route Parameters)Think of params as the address markers or IDs in the URL itself. 
+// They tell the server which specific item you want to look at, update, or delete.Where it comes from: 
+// The URL path.When to use it: When you need to identify a specific resource (e.g., a specific user, product, or post).
+// Example Route: app.get('/users/:userId/posts/:postId', ...)If the URL is: /users/42/posts/7What req.params contains:
+// JavaScript { a example 
+    //   userId: '42',
+    //   postId: '7'
+    // }
+// 2. req.body (Request Body)Think of req.body as the package of cargo or payload you are sending to the server. 
+// It contains the actual data you want the server to save, process, or update.Where it comes from: 
+// The body of an HTTP request (usually sent via POST, PUT, or PATCH requests, like when you submit a form or sign up 
+// for an account).When to use it: When you are creating new data or sending a large amount of information that shouldn't 
+// be crammed into a URL (like a password, email, or blog post content).Example Scenario: A user fills out a registration 
+// form.What req.body contains:
+// JavaScript{
+    //   username: 'johndoe',
+    //   email: 'john@example.com',
+    //   age: 28
+    // }
+    // Quick Comparison SummaryFeaturereq.paramsreq.bodyWhere is the data?Directly in the URL path (/users/:id)Hidden inside the HTTP request bodyHTTP MethodsUsually GET, DELETE, PUTUsually POST, PUT, PATCHMain PurposeTo identify a specific resourceTo send or update data contentVisibilityVisible in the browser address barHidden from the URL (secure for passwords, etc.)
+
+
+// aggregation pipeline here 
+// we need the profile ie the details of a channel so for that we are creating this function
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+
+    const {username} = req.params
+
+    if(!username || username.trim() === "")
+    {
+        throw new APIerror(400, "username is missing");
+    }
+
+    // User.aggregate(); // this is how we write aggregate pipeline here 
+    // passing a array of pipeline in the aggregation
+
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase(),
+            }
+        },
+        {
+            // this channel and subscriber is present in the subscription model as we can see
+            // this is for how many subscriber this user has
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id", // with which name it is saved in current dataset ie user 
+                // this tells that in this dataset ie user it is saved as id and in foreign data set find the foreign field 
+                // which matched this _id 
+                // in local field we pass that thing which we want to get matched from the field which is in the 
+                // foreign field eg like here if user id matches with the channels id so it will bring that document 
+                // and save it in the subscribers field
+                foreignField: "channel", // this is for as this user will be having a channel name so 
+                // we will find how many users has subscribed to this particular channel to find the number of 
+                // subscribers of this channel as data will be stored in form of document which will and each respective 
+                // document will hold a cannel name and the user subscribed to that channel so we will loop for the 
+                // channel name that how many user has subscribed to that particular channel not going for the subscribers 
+                // for that we will do it in this lookup below as we want to know how many channels this current user has 
+                // subscribed so for that we will count the number of documents where this user is saved as a subscriber 
+                as: "subscribers"
+            }
+        },
+        {
+            // making a look up that this user has subscribed to which & which channels 
+            // so this will only save array and in that array its [0] will contain only those values or object where 
+            // subscriber = current user _id and the no. of those obj will be the count of the channels this 
+            // user has subscribed
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subscriber", // this will be list of subscribed channel this user has subscribed 
+                as: "subscribedTo"
+            }
+        },
+        // now adding  these both field of pipeline in our db ie: in user db
+        {
+            // this add field will save the fields which we mentain here in the user db as we are using aggregation 
+            // in user model here it will save subscribersCount and ChannelsSubscribedToCount
+            $addFields: {
+                subscribersCount: {
+                    // this size will give the size ie the no. of documents that are there in the subscribers that this user has 
+                    // meeans the no. of documents where this user is saved as channel ie how many other users has 
+                    // subscribed this user giving the subscriber count 
+                    $size: "$subscribers" // adding a doller sign as this "subscribers" is a field 
+                },
+                // the no. of channels this user has subscribed 
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                // this one is for the button which shows that the channel is subscribed or not for which we will be using 
+                // subscribers document and in that checking for the subscriber if this user has subscribed to the channel 
+                // giving frontend a true value for it and there in that particular subscribe button it will show subscribed
+                // if not we return frontend false so that that button remain subscribe 
+                isSubscribed: {
+                    // this command is for setting up the condition 
+                    $cond: {
+                        if: {
+                            // this $in works both on arrays nad in objects here we make him deal with object but 
+                            // if it was an array we would have done the same
+                            // in used for cal inside array or from object
+                            $in: [req.user?._id, "$subscribers.subscriber"]
+                            // find the current user req.user?._id using its id and find that which channels this user 
+                            // has subscribed 
+                            // this $subscribers.subscriber is for in documents find subscriber which is equal to the 
+                            // req,user._id as we are saving the subscriber using its id if the id match for that respective 
+                            // documents which contain subscriber = req.user._id return true to frontend for those channels 
+                            // present in the respective documennt 
+                        },
+                        then: true, // if if condition is ture 
+                        else: false // if if condition is false
+                    }
+                }
+            }
+        },
+        // using project field
+        // this will help us to pass only selected attributes that we want to pass and not let those attribute pass 
+        // which we dont want 
+        // the things we want to pass we give it 1 and the things we dont want to pass we give them 0
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1
+            }
+        }
+    ])
+
+    console.log(channel);
+    // this match in the aggregation pipeline returns an array and in that array at index 0 our data is there 
+
+    if(!channel?.length) // if length is 0 than this if loop will run 
+    {
+        throw new APIerror(404, "channel does not exist");
+    }
+
+    return res.status(200)
+    .json(new APIresponse(200, channel[0], "User channel fetched successfully !!!"));
+    
+})
+
+// another aggregation pipeline 
+// here we will be using the nested lookup as we will be using lookup for getting data from the videos schema to bring here 
+// but we also need owner from videos schema which needs user schema for the data for whichh will be using the
+// nested lookup here using which we will get data from the user and bring it to the owner and then use that 
+// data here in our aggregation pipeline acc to our own will
+
+const getWatchHistory = asyncHandler(async (req, res) => {
+    // req.user._id  this returns a string which when we send to mongoose behind the schene do things and find the 
+    // actual user with this id user or video depend on us what we are doing
+    const user = await User.aggregate([
+        {
+            $match: {
+                // here we will be using id for getting data not the username like before 
+                // _id = user.req.id; // here it will be wrong as this will send a string not an object id which will 
+                // be unable to get the user._id from the database of the user as in our codes mongoose use to handle these 
+                // things but here in aggregation pipelines mongoose does not interfare here 
+                // so t0 prevent this we create a mongoose id here so that it can find that mongoose id in the database 
+                _id: new mongoose.Types.ObjectId(req.user._id)
+                // now we have get the user the curent user 
+            }
+        },
+        // creating another pipeline lookup
+        {
+            // The aggregation pipeline is a temporary, on-the-fly transformation that happens only when the user visits 
+            // their History page. User clicks a new video: Your backend runs an update query ($push) that adds just the 
+            // new video ID to the database array (watchHistory: ["video_id_A", "video_id_B", "video_id_C"]). 
+            // User opens the History page: Your backend triggers the aggregation pipeline. The Magic Trick ($lookup): 
+            // For a brief second, MongoDB looks at that array of IDs, grabs the full video details from the videos 
+            // collection, and sends the response back to the frontend packed with the full video objects. 
+            // The Database is untouched: The actual database document remains safely stored as just IDs
+
+            // this will update the current watchHistory field but will not store in the db
+            $lookup: {
+                from: "videos", // this is how the video schema would be stored in the database with this name
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                // nested lookup or pipelining
+                pipeline: [
+                    {
+                        $lookup: {
+                            // here our current model is not users here its is videos not like this previous lookup 
+                            // where our model was users 
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        // adding a field or we can say overwriting a field 
+                        $addField: {
+                            owner: {
+                                // From all the documents that have been gathered together in this group, 
+                                // take the value which we have given to the first and from it from the very first document 
+                                // ie its x[o] and use it for the final output. give the field x[0]
+                                // which here is owner = owner[0] which makes things easy for us as we now 
+                                // dont have to return a owner[0] but just a owner
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    // currently sending all the value from the videos to the watchHistory in this aggregation pipeline
+
+    return res.status(200)
+    .json(new APIresponse(200, user[0].watchHistory, "Watch History fetched successfully !!!"));
+    // as user contain all the data id fullname etc so we are just passing watchHistory we can pass the whole user[0]
+    // but it ill also pass useless data 
+
+})
 
 export {
     registerUser,
@@ -601,7 +855,9 @@ export {
     changeAvatar,
     changeEmail,
     changeusername,
-    changeFullName
+    changeFullName,
+    getWatchHistory,
+    getUserChannelProfile
 }
 
 
@@ -909,6 +1165,143 @@ export {
 
 // const changeAvatar = changeImage("avatar");
 
+
+// const getUserChannelProfile = asyncHandler(async (req, res) => {
+
+//     const {username} = req.params
+
+//     if(!username || username.trim() === "")
+//     {
+//         throw new APIerror(400, "username is missing");
+//     }
+
+//     const channel = await User.aggregate([
+//         {
+//             $match: {
+//                 username: username?.toLowerCase(),
+//             }
+//         },
+//         {
+            
+//             $lookup: {
+//                 from: "subscriptions",
+//                 localField: "_id", 
+//                 foreignField: "channel", 
+//                 as: "subscribers"
+//             }
+//         },
+//         {
+           
+//             $lookup: {
+//                 from: "subscriptions",
+//                 localField: "_id",
+//                 foreignField: "subscriber", 
+//                 as: "subscribedTo"
+//             }
+//         },
+      
+//         {
+           
+//             $addFields: {
+//                 subscribersCount: {
+             
+//                     $size: "$subscribers" 
+//                 },
+               
+//                 channelsSubscribedToCount: {
+//                     $size: "$subscribedTo"
+//                 },
+                
+//                 isSubscribed: {
+//                     $cond: {
+//                         if: {
+                           
+//                             $in: [req.user?._id, "$subscribers.subscriber"]
+                            
+//                         },
+//                         then: true,
+//                         else: false
+//                     }
+//                 }
+//             }
+//         },
+        
+//         {
+//             $project: {
+//                 fullName: 1,
+//                 username: 1,
+//                 subscribersCount: 1,
+//                 channelsSubscribedToCount: 1,
+//                 isSubscribed: 1,
+//                 avatar: 1,
+//                 coverImage: 1
+//             }
+//         }
+//     ])
+
+//     console.log(channel);
+
+//     if(!channel?.length) 
+//     {
+//         throw new APIerror(404, "channel does not exist");
+//     }
+
+//     return res.status(200)
+//     .json(new APIresponse(200, channel[0], "User channel fetched successfully !!!"));
+    
+// })
+
+// const getWatchHistory = asyncHandler(async (req, res) => {
+
+//     const user = await User.aggregate([
+//         {
+//             $match: {
+//                 _id: new mongoose.Types.ObjectId(req.user._id)
+//             }
+//         },
+      
+//         {
+            
+//             $lookup: {
+//                 from: "videos",
+//                 localField: "watchHistory",
+//                 foreignField: "_id",
+//                 as: "watchHistory",
+//                 pipeline: [
+//                     {
+//                         $lookup: {
+//                             from: "users",
+//                             localField: "owner",
+//                             foreignField: "_id",
+//                             as: "owner",
+//                             pipeline: [
+//                                 {
+//                                     $project: {
+//                                         fullName: 1,
+//                                         username: 1,
+//                                         avatar: 1
+//                                     }
+//                                 }
+//                             ]
+//                         }
+//                     },
+//                     {
+//                         $addField: {
+//                             owner: {
+//                                 $first: "$owner"
+//                             }
+//                         }
+//                     }
+//                 ]
+//             }
+//         }
+//     ])
+
+//     return res.status(200)
+//     .json(new APIresponse(200, user[0].watchHistory, "Watch History fetched successfully !!!"));
+
+// })
+
 // export {
 //     registerUser,
 //     loginUser,
@@ -920,9 +1313,7 @@ export {
 //     changeAvatar,
 //     changeEmail,
 //     changeusername,
-//     changeFullName
+//     changeFullName,
+//     getWatchHistory,
+//     getUserChannelProfile
 // }
-
-
-
-

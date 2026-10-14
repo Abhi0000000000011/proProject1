@@ -1,7 +1,9 @@
-import { User } from "../models/user.models";
-import { APIerror } from "./apiError";
-import { asyncHandler } from "./asyncHandler";
-import { removeFromClodinary } from "./removeFromCloudinary";
+import { User } from "../models/user.models.js";
+import { APIerror } from "./apiError.js";
+import { APIresponse } from "./apiResponse.js";
+import { asyncHandler } from "./asyncHandler.js";
+import { uploadOnCloudinary } from "./cloudinary.js";
+import { removeFromClodinary } from "./removeFromCloudinary.js";
 
 const changeImage = (image) => {
     return asyncHandler(async (req, res) => {
@@ -55,7 +57,6 @@ const changeImage = (image) => {
         {
             user.coverImagePublicId = newImage.public_id;
         }
-
         
         // this is nothing special here we are just updating the object like plain js
         // here it is like user.avatar = newImage.url assigning value to ann attribute of an object
@@ -142,10 +143,10 @@ export {changeImage};
 
 // // code without comments 
 
-// import { User } from "../models/user.models";
-// import { APIerror } from "./apiError";
-// import { asyncHandler } from "./asyncHandler";
-// import { removeFromClodinary } from "./removeFromCloudinary";
+// import { User } from "../models/user.models.js";
+// import { APIerror } from "./apiErro.jsr";
+// import { asyncHandler } from "./asyncHandler.js";
+// import { removeFromClodinary } from "./removeFromCloudinary.js";
 
 // const changeImage = (image) => {
 //     return asyncHandler(async (req, res) => {

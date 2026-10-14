@@ -1,7 +1,7 @@
 
 import {v2 as cloudinary} from "cloudinary";
-import { APIerror } from "./apiError";
-import { asyncHandler } from "./asyncHandler";
+import { APIerror } from "./apiError.js";
+import { asyncHandler } from "./asyncHandler.js";
 
 
 cloudinary.config({ 
@@ -57,8 +57,8 @@ export {removeFromClodinary};
 // // code without comments 
 
 // import {v2 as cloudinary} from "cloudinary";
-// import { APIerror } from "./apiError";
-// import { asyncHandler } from "./asyncHandler";
+// import { APIerror } from "./apiError.js";
+// import { asyncHandler } from "./asyncHandler.js";
 
 
 // cloudinary.config({ 
